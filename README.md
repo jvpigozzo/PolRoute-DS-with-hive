@@ -1,5 +1,7 @@
 # PolRoute-DS-with-hive
 
+Este projeto tem como objetivo demonstrar o uso do Apache Hive como ferramenta de Data Warehouse para análise de dados relacionados a segurança pública, utilizando um conjunto de dados de crimes. A solução é construída sobre um ambiente Docker, o que facilita a replicação e portabilidade da configuração.
+
 ## HiveServer2
 
 Fonte: [https://hub.docker.com/r/apache/hive](https://hub.docker.com/r/apache/hive)
@@ -28,17 +30,50 @@ Premissas:
 - O arquivo CSV está disponível localmente.
 - O CSV possui cabeçalho na primeira linha.
 
-Copie o arquivo CSV para um diretório acessível dentro do container:
+1. Copie o arquivo CSV para o container
 
 ```bash
 docker cp arquivo.csv hive4:/tmp/arquivo.csv
 ```
-
-Conecte-se ao Hive usando o Beeline e no prompt do Beeline, crie a tabela Hive que representa o schema do CSV, informando o delimitador.
-
-Ainda no Beeline, rode o comando para carregar os dados:
+2. Conecte-se ao Hive via Beeline
 
 ```bash
-LOAD DATA LOCAL INPATH '/tmp/crime.csv' INTO TABLE crime_data;
+docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
+```
+3. Crie o schema PolRouteDS 
+
+```bash
+CREATE DATABASE IF NOT EXISTS PolRouteDS;
+```
+
+4. Crie as tabelas no schema PolRouteDS
+
+```bash
+CREATE TABLE PolRouteDS.crime_data (
+  id INT,
+  total_feminicide INT,
+  total_homicide INT,
+  total_felony_murder INT,
+  total_bodily_harm INT,
+  total_theft_cellphone INT,
+  total_armed_robbery_cellphone INT,
+  total_theft_auto INT,
+  total_armed_robbery_auto INT,
+  segment_id INT,
+  time_id INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ';'
+STORED AS TEXTFILE;
+```
+5. Carregue os dados do CSV para a tabela
+
+```bash
+LOAD DATA LOCAL INPATH '/tmp/crime.csv' INTO TABLE PolRouteDS.crime_data;
+```
+
+6. Verifique os dados carregados
+```bash
+SELECT * FROM PolRouteDS.crime_data LIMIT 10;
 ```
 
