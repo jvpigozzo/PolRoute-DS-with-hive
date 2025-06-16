@@ -1,12 +1,12 @@
 # PolRoute-DS-with-hive
 
-Este projeto tem como objetivo demonstrar o uso do Apache Hive como ferramenta de Data Warehouse para análise de dados relacionados a segurança pública, utilizando um conjunto de dados de crimes. A solução é construída sobre um ambiente Docker, o que facilita a replicação e portabilidade da configuração.
+Este projeto tem como objetivo demonstrar o uso do Apache Hive como ferramenta de Data Warehouse para análise de dados relacionados à segurança pública, utilizando um conjunto de dados de datas. A solução é construída sobre um ambiente Docker, o que facilita a replicação e portabilidade da configuração.
 
 ## HiveServer2
 
 Fonte: [https://hub.docker.com/r/apache/hive](https://hub.docker.com/r/apache/hive)
 
-A página informa que a imagem inclui uma instalação do Apache Hive, um sistema de data warehouse baseado no Hadoop que permite executar consultas SQL (usando HiveQL) em grandes volumes de dados distribuídos.
+A imagem inclui uma instalação do Apache Hive, um sistema de data warehouse baseado no Hadoop que permite executar consultas SQL (usando HiveQL) em grandes volumes de dados distribuídos.
 
 O comando inicializa o HiveServer2 — um serviço que aceita conexões via JDBC/ODBC para executar consultas HiveQL — junto com um Metastore incorporado na mesma instância. Dessa forma, tudo funciona dentro de um único container, sem precisar configurar um banco de dados separado para o Metastore.
 
@@ -21,35 +21,46 @@ Acesse o Beeline dentro do container:
 ```bash
 docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
 ```
-Acesse o HiveServer2 Web UI no navegador em  `http://localhost:10002/`.
 
-## Load CSV para Apache Hive no container Docker
+Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 
-Premissas:
+## Carregar CSV no Apache Hive (via container Docker)
+
+### Premissas
 
 - O arquivo CSV está disponível localmente.
-- O CSV possui cabeçalho na primeira linha.
+- O CSV possui cabeçalho na primeira linha (que deve ser ignorado no carregamento).
 
-1. Copie o arquivo CSV para o container
+### Etapas
+
+1. **Remova o cabeçalho do CSV localmente**:
 
 ```bash
-docker cp arquivo.csv hive4:/tmp/arquivo.csv
+tail -n +2 data.csv > data_no_header.csv
 ```
-2. Conecte-se ao Hive via Beeline
+
+2. **Copie o CSV (sem cabeçalho) para o container**:
+
+```bash
+docker cp data_no_header.csv hive4:/tmp/data.csv
+```
+
+3. **Conecte-se ao Hive via Beeline**:
 
 ```bash
 docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
 ```
-3. Crie o schema PolRouteDS 
 
-```bash
+4. **Crie o schema `PolRouteDS`**:
+
+```sql
 CREATE DATABASE IF NOT EXISTS PolRouteDS;
 ```
 
-4. Crie as tabelas no schema PolRouteDS
+5. **Crie a tabela `data_data` no schema**:
 
-```bash
-CREATE TABLE PolRouteDS.crime_data (
+```sql
+CREATE TABLE PolRouteDS.data (
   id INT,
   total_feminicide INT,
   total_homicide INT,
@@ -66,14 +77,15 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ';'
 STORED AS TEXTFILE;
 ```
-5. Carregue os dados do CSV para a tabela
 
-```bash
-LOAD DATA LOCAL INPATH '/tmp/crime.csv' INTO TABLE PolRouteDS.crime_data;
+6. **Carregue os dados do CSV para a tabela Hive**:
+
+```sql
+LOAD DATA LOCAL INPATH '/tmp/data.csv' INTO TABLE PolRouteDS.data_data;
 ```
 
-6. Verifique os dados carregados
-```bash
-SELECT * FROM PolRouteDS.crime_data LIMIT 10;
-```
+7. **Verifique os dados carregados**:
 
+```sql
+SELECT * FROM PolRouteDS.data_data LIMIT 10;
+```
