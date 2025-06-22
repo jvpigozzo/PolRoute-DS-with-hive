@@ -31,61 +31,158 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 - O arquivo CSV está disponível localmente.
 - O CSV possui cabeçalho na primeira linha (que deve ser ignorado no carregamento).
 
-### Etapas
+# Diagrama do Banco de Dados
+## Summary
 
-1. **Remova o cabeçalho do CSV localmente**:
+- [Table Structure](#table-structure)
+	- [crime](#crime)
+	- [time](#time)
+	- [segment](#segment)
+	- [vertice](#vertice)
+	- [neighborhood](#neighborhood)
+	- [district](#district)
+- [Relationships](#relationships)
+- [Database Diagram](#database-diagram)
 
-```bash
-tail -n +2 data.csv > data_no_header.csv
-```
+## Table structure
 
-2. **Copie o CSV (sem cabeçalho) para o container**:
+### crime
 
-```bash
-docker cp data_no_header.csv hive4:/tmp/data.csv
-```
+| Name        | Type          | Settings                      | References                    | Note                           |
+|-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
+| **id** | INT | 🔑 PK, not null, unique |  | |
+| **total_feminicide** | INT | null |  | |
+| **total_homicide** | INT | null |  | |
+| **total_felony_murder** | INT | null |  | |
+| **total_bodily_harm** | INT | null |  | |
+| **total_theft_cellphone** | INT | null |  | |
+| **total_armed_robbery_cellphone** | INT | null |  | |
+| **total_theft_auto** | INT | null |  | |
+| **total_armed_robbery_auto** | INT | null |  | |
+| **segment_id** | INT | null | fk_crime_segment_id_segment | |
+| **time_id** | INT | null | fk_crime_time_id_time | | 
 
-3. **Conecte-se ao Hive via Beeline**:
 
-```bash
-docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
-```
+### time
 
-4. **Crie o schema `PolRouteDS`**:
+| Name        | Type          | Settings                      | References                    | Note                           |
+|-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
+| **id** | INT | 🔑 PK, not null, unique |  | |
+| **period** | CHAR | null |  | |
+| **day** | INT | null |  | |
+| **month** | INT | null |  | |
+| **year** | INT | null |  | |
+| **weekday** | CHAR | null |  | | 
 
-```sql
-CREATE DATABASE IF NOT EXISTS PolRouteDS;
-```
 
-5. **Crie a tabela `data_data` no schema**:
+### segment
 
-```sql
-CREATE TABLE PolRouteDS.data (
-  id INT,
-  total_feminicide INT,
-  total_homicide INT,
-  total_felony_murder INT,
-  total_bodily_harm INT,
-  total_theft_cellphone INT,
-  total_armed_robbery_cellphone INT,
-  total_theft_auto INT,
-  total_armed_robbery_auto INT,
-  segment_id INT,
-  time_id INT
-)
-ROW FORMAT DELIMITED
-FIELDS TERMINATED BY ';'
-STORED AS TEXTFILE;
-```
+| Name        | Type          | Settings                      | References                    | Note                           |
+|-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
+| **id** | INT | 🔑 PK, not null, unique | fk_segment_id_vertice | |
+| **geometry** | CHAR | null |  | |
+| **length** | FLOAT | null |  | |
+| **final_vertice_id** | INT | null | fk_segment_final_vertice_id_vertice | |
+| **start_vertice_id** | INT | null |  | | 
 
-6. **Carregue os dados do CSV para a tabela Hive**:
 
-```sql
-LOAD DATA LOCAL INPATH '/tmp/data.csv' INTO TABLE PolRouteDS.data_data;
-```
+### vertice
 
-7. **Verifique os dados carregados**:
+| Name        | Type          | Settings                      | References                    | Note                           |
+|-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
+| **id** | INT | 🔑 PK, not null, unique |  | |
+| **label** | INT | null |  | |
+| **district_id** | INT | null | fk_vertice_district_id_district | |
+| **neighborhood_id** | INT | null | fk_vertice_neighborhood_id_neighborhood | |
+| **zone_id** | INT | null |  | | 
 
-```sql
-SELECT * FROM PolRouteDS.data_data LIMIT 10;
+
+### neighborhood
+
+| Name        | Type          | Settings                      | References                    | Note                           |
+|-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
+| **id** | INT | 🔑 PK, not null, unique |  | |
+| **name** | INT | null |  | |
+| **geometry** | CHAR | null |  | | 
+
+
+### district
+
+| Name        | Type          | Settings                      | References                    | Note                           |
+|-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
+| **id** | INT | 🔑 PK, not null, unique |  | |
+| **name** | CHAR | null |  | |
+| **geometry** | CHAR | null |  | | 
+
+
+## Relationships
+
+- **crime -> time**: N:1
+- **crime -> segment**: N:1
+- **vertice -> neighborhood**: N:1
+- **vertice -> district**: N:1
+- **segment -> vertice**: N:1
+- **segment -> vertice**: N:1
+
+## Database Diagram
+
+```mermaid
+erDiagram
+	crime }o--|| time : references
+	crime }o--|| segment : references
+	vertice }o--|| neighborhood : references
+	vertice }o--|| district : references
+	segment }o--|| vertice : references
+	segment }o--|| vertice : references
+
+	crime {
+		INT id
+		INT total_feminicide
+		INT total_homicide
+		INT total_felony_murder
+		INT total_bodily_harm
+		INT total_theft_cellphone
+		INT total_armed_robbery_cellphone
+		INT total_theft_auto
+		INT total_armed_robbery_auto
+		INT segment_id
+		INT time_id
+	}
+
+	time {
+		INT id
+		CHAR period
+		INT day
+		INT month
+		INT year
+		CHAR weekday
+	}
+
+	segment {
+		INT id
+		CHAR geometry
+		FLOAT length
+		INT final_vertice_id
+		INT start_vertice_id
+	}
+
+	vertice {
+		INT id
+		INT label
+		INT district_id
+		INT neighborhood_id
+		INT zone_id
+	}
+
+	neighborhood {
+		INT id
+		INT name
+		CHAR geometry
+	}
+
+	district {
+		INT id
+		CHAR name
+		CHAR geometry
+	}
 ```
