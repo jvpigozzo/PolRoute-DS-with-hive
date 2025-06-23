@@ -24,12 +24,9 @@ docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
 
 Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 
-## Carregar CSV no Apache Hive (via container Docker)
+## Execução Bash
 
-### Premissas
-
-- O arquivo CSV está disponível localmente.
-- O CSV possui cabeçalho na primeira linha (que deve ser ignorado no carregamento).
+A execução dos arquivos bash segue as premissa de que os arquivos CSV estão disponíveis localmente.
 
 ## Diagrama da Base de Dados
 
