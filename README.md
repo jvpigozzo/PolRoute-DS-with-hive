@@ -34,17 +34,10 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 ## Diagrama do Banco de Dados
 
 - [Estrutura das Tabelas](#table-structure)
-	- [crime](#crime)
-	- [time](#time)
-	- [segment](#segment)
-	- [vertice](#vertice)
-	- [neighborhood](#neighborhood)
-	- [district](#district)
 - [Diagrama da Base de Dados](#database-diagram)
 
-### Table structure
+### Estrutura das Tabelas
 
-#### crime
 
 | Name        | Type          | Settings                      | References                    | Note                           |
 |-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
@@ -61,7 +54,6 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 | **time_id** | INT | null | fk_crime_time_id_time | | 
 
 
-#### time
 
 | Name        | Type          | Settings                      | References                    | Note                           |
 |-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
@@ -73,7 +65,6 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 | **weekday** | CHAR | null |  | | 
 
 
-#### segment
 
 | Name        | Type          | Settings                      | References                    | Note                           |
 |-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
@@ -84,7 +75,6 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 | **start_vertice_id** | INT | null |  | | 
 
 
-#### vertice
 
 | Name        | Type          | Settings                      | References                    | Note                           |
 |-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
@@ -95,7 +85,6 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 | **zone_id** | INT | null |  | | 
 
 
-#### neighborhood
 
 | Name        | Type          | Settings                      | References                    | Note                           |
 |-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
@@ -104,7 +93,6 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 | **geometry** | CHAR | null |  | | 
 
 
-#### district
 
 | Name        | Type          | Settings                      | References                    | Note                           |
 |-------------|---------------|-------------------------------|-------------------------------|--------------------------------|
