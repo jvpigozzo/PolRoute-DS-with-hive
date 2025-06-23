@@ -41,7 +41,6 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 	- [vertice](#vertice)
 	- [neighborhood](#neighborhood)
 	- [district](#district)
-- [Relationships](#relationships)
 - [Database Diagram](#database-diagram)
 
 ## Table structure
@@ -114,15 +113,6 @@ Acesse o HiveServer2 Web UI no navegador em `http://localhost:10002/`.
 | **name** | CHAR | null |  | |
 | **geometry** | CHAR | null |  | | 
 
-
-## Relationships
-
-- **crime -> time**: N:1
-- **crime -> segment**: N:1
-- **vertice -> neighborhood**: N:1
-- **vertice -> district**: N:1
-- **segment -> vertice**: N:1
-- **segment -> vertice**: N:1
 
 ## Database Diagram
 
