@@ -1,0 +1,15 @@
+Consulta;Paralelismo;Iteração;Tempo(s)
+q1_parallel_false_1;Não;1;10.515
+q1_parallel_true_1;Sim;1;8.688
+q2_parallel_false_1;Não;1;12.702
+q2_parallel_true_1;Sim;1;10.27
+q3_parallel_false_1;Não;1;9.834
+q3_parallel_true_1;Sim;1;5.998
+q4_parallel_false_1;Não;1;10.005
+q4_parallel_true_1;Sim;1;7.615
+q5_parallel_false_1;Não;1;7.746
+q5_parallel_true_1;Sim;1;4.163
+q6_parallel_false_1;Não;1;8.848
+q6_parallel_true_1;Sim;1;6.66
+q7_parallel_false_1;Não;1;26.27
+q7_parallel_true_1;Sim;1;20.002
